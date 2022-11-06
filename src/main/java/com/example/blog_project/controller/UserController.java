@@ -22,7 +22,7 @@ import java.util.HashMap;
 public class UserController {
 
     @Resource
-    private UserService service;
+    private UserService userService;
 
     @RequestMapping("/login")
     public HashMap<String, Object> login(HttpServletRequest request, String username, String password) {
@@ -30,7 +30,7 @@ public class UserController {
         int data = -1;
         String message = "未知错误";
         if (StringUtils.hasLength(username) && StringUtils.hasLength(password)) {
-            user user = service.selectByName(username);
+            user user = userService.selectByName(username);
             if (user != null && user.getPassword().equals(password) && user.getUserId() > 1) {
                 data = 1;
                 message = "";
@@ -73,7 +73,7 @@ public class UserController {
             user user = new user();
             user.setUsername(username);
             user.setPassword(password);
-            int sqlResult = service.insert(user);
+            int sqlResult = userService.insert(user);
             if (sqlResult == 1) {
                 data = 1;
                 message = "";
