@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.blog_project.mapper.BlogMapper">
+    <insert id="insert">
+        insert into blog
+        values (Null, #{title}, #{content}, #{postTime}, #{userId})
+    </insert>
+    <select id="selectAll" resultType="com.example.blog_project.model.Blog">
+        select *
+        from blog;
+    </select>
+    <select id="selectById" resultType="com.example.blog_project.model.Blog">
+        select *
+        from blog
+        where blogId = #{blogId}
+    </select>
+    <delete id="delete">
+        delete
+        from blog
+        where blogId = #{blogId}
+    </delete>
+    <select id="selectArticles" resultType="Integer">
+        select count(*)
+        from blog
+        where userId = #{userId}
+    </select>
+    <update id="update">
+        update blog
+        set title   = #{title},
+            content = #{content}
+        where blogId = #{blogId}
+    </update>
+
+</mapper>
