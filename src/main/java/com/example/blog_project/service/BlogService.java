@@ -20,27 +20,32 @@ public class BlogService {
     @Resource
     private BlogMapper blogMapper;
 
-    public Integer insert(Blog blog){
+
+    public Integer insert(Blog blog) {
         return blogMapper.insert(blog);
     }
 
-    public List<Blog> selectAll(){
+    public List<Blog> selectAll() {
         return blogMapper.selectAll();
     }
 
-    public Blog selectById(@Param("blogId") Integer id){
-        return blogMapper.selectById(id);
+    public List<Blog> selectByUserId(@Param("blogId") Integer id) {
+        return blogMapper.selectByUserId(id);
     }
 
-    public Integer delete(@Param("blogId") Integer id){
+    public Integer delete(@Param("blogId") Integer id) {
         return blogMapper.delete(id);
     }
 
-    public Integer selectArticles(@Param("userId") Integer userId){
+    public Integer selectArticles(@Param("userId") Integer userId) {
         return blogMapper.selectArticles(userId);
     }
 
-    public Integer update(Blog blog){
+    public Integer update(Blog blog) {
         return blogMapper.update(blog);
+    }
+
+    public Blog selectByBlogId(@Param("blogId") Integer id) {
+        return blogMapper.selectByBlogId(id);
     }
 }

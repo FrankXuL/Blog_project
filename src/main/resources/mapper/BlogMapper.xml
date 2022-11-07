@@ -10,7 +10,12 @@
         select *
         from blog;
     </select>
-    <select id="selectById" resultType="com.example.blog_project.model.Blog">
+    <select id="selectByUserId" resultType="com.example.blog_project.model.Blog">
+        select *
+        from blog
+        where userId= #{userId}
+    </select>
+    <select id="selectByBlogId" resultType="com.example.blog_project.model.Blog">
         select *
         from blog
         where blogId = #{blogId}

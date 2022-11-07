@@ -34,9 +34,9 @@ class BlogMapperTest {
     }
 
     @Test
-    void selectById() {
-        Blog blog = blogMapper.selectById(1);
-        log.info("selectById:" + blog);
+    void selectByUserId() {
+        List<Blog> blogs = blogMapper.selectByUserId(1);
+        log.info("selectById:" + blogs);
     }
     @Transactional
     @Test

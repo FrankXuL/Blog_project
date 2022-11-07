@@ -2,6 +2,7 @@ package com.example.blog_project.controller;
 
 import com.example.blog_project.model.user;
 import com.example.blog_project.service.UserService;
+import com.example.blog_project.util.UserUtil;
 import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,6 +25,13 @@ public class UserController {
     @Resource
     private UserService userService;
 
+    /**
+     * @description:
+     * @param: request, username, password
+     * @return: java.util.HashMap<java.lang.String, java.lang.Object>
+     * @author Xu
+     * @date: 7/11/2022 下午 12:28
+     */
     @RequestMapping("/login")
     public HashMap<String, Object> login(HttpServletRequest request, String username, String password) {
         HashMap<String, Object> result = new HashMap<>();
@@ -47,6 +55,13 @@ public class UserController {
         return result;
     }
 
+    /**
+     * @description: 用户注销功能
+     * @param: request
+     * @return: java.util.HashMap<java.lang.String, java.lang.Object>
+     * @author Xu
+     * @date: 7/11/2022 下午 12:27
+     */
     @RequestMapping("/logout")
     public HashMap<String, Object> logout(HttpServletRequest request) {
         HashMap<String, Object> result = new HashMap<>();
@@ -64,6 +79,13 @@ public class UserController {
         return result;
     }
 
+    /**
+     * @description: 用户注册功能
+     * @param: username, password
+     * @return: java.util.HashMap<java.lang.String, java.lang.Object>
+     * @author Xu
+     * @date: 7/11/2022 下午 12:28
+     */
     @RequestMapping("/register")
     public HashMap<String, Object> register(String username, String password) {
         HashMap<String, Object> result = new HashMap<>();
@@ -87,4 +109,22 @@ public class UserController {
         return result;
     }
 
+    @RequestMapping("/loginstate")
+    public HashMap<String, Object> LoginState(HttpServletRequest request) {
+        HashMap<String, Object> result = new HashMap<>();
+        user data = null;
+        String message = "未知错误";
+        user user = UserUtil.checkLoginStatus(request);
+        if (user != null) {
+            data = user;
+            message = "";
+
+        }else{
+            message = "非法参数";
+        }
+        result.put("success", 200);
+        result.put("data", data);
+        result.put("message", message);
+        return result;
+    }
 }

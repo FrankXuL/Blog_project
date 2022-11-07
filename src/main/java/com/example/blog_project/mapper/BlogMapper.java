@@ -1,7 +1,6 @@
 package com.example.blog_project.mapper;
 
 import com.example.blog_project.model.Blog;
-import com.example.blog_project.model.user;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -19,7 +18,9 @@ public interface BlogMapper {
 
     List<Blog> selectAll();
 
-    Blog selectById(@Param("blogId") Integer id);
+    List<Blog> selectByUserId(@Param("userId") Integer id);
+
+    Blog selectByBlogId(@Param("blogId") Integer id);
 
     Integer delete(@Param("blogId") Integer id);
 
