@@ -6,6 +6,13 @@
         insert into user
         values (null, #{username}, #{password}, #{github})
     </insert>
+    <update id="update">
+        update user
+        set username=#{username},
+            password=#{password},
+            github=#{github}
+        where userId = #{userId}
+    </update>
     <select id="selectAll" resultType="com.example.blog_project.model.user">
         select *
         from user
@@ -16,9 +23,18 @@
         where userId = #{userId}
     </select>
     <delete id="delete">
-        delete from user where userId = #{userId}
+        delete
+        from user
+        where userId = #{userId}
     </delete>
     <select id="selectByName" resultType="com.example.blog_project.model.user">
-         select * from user where username = #{username}
+        select *
+        from user
+        where username = #{username}
+    </select>
+    <select id="selectByBlogId" resultType="com.example.blog_project.model.user">
+        select *
+        from user
+        where userId = (select userId from blog where blogId = #{blogId})
     </select>
 </mapper>

@@ -17,4 +17,5 @@ public class Blog {
     private String content;
     private Timestamp postTime;
     private int userId;
+    private int readCount;
 }

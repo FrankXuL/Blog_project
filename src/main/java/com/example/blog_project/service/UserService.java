@@ -41,4 +41,10 @@ public class UserService {
     public user selectByName(@Param("username") String username) {
         return userMapper.selectByName(username);
     }
+    public user selectByBlogId(@Param("blogId") Integer blogId){
+        return userMapper.selectByBlogId(blogId);
+    }
+    public Integer update (user user){
+        return userMapper.update(user);
+    }
 }

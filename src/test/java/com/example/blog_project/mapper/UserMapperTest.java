@@ -48,4 +48,10 @@ class UserMapperTest {
         user user = userMapper.selectByName("oasis");
         log.info("selectByName" + user);
     }
+
+    @Test
+    void selectByBlogId() {
+        user user = userMapper.selectByBlogId(1);
+        log.info("selectByBlogId" + user);
+    }
 }

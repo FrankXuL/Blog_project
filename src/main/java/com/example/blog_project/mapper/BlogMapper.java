@@ -4,6 +4,7 @@ import com.example.blog_project.model.Blog;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -27,4 +28,6 @@ public interface BlogMapper {
     Integer selectArticles(@Param("userId") Integer userId);
 
     Integer update(Blog blog);
+
+    Integer updateReadCount(@Param("blogId") Integer blogId);
 }

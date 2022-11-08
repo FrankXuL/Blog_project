@@ -109,7 +109,7 @@ html, body {
     text-align: center;
     color: #888;
     text-decoration: none;
-    padding: 10px;
+    padding: 8px;
 }
 
 .card .counter {
@@ -154,10 +154,13 @@ html, body {
     text-align: center;
     color: #888;
     text-decoration: none;
+    padding: 0px;
+}
+.blogcontent .spacer{
     padding: 10px;
 }
-
-.card1 .counter {
+.card1 .counter ,
+.card1 .blogcontent{
     display: flex;
     justify-content: space-around;
     padding: 5px;

@@ -16,14 +16,14 @@
         <span class="title">博客系统</span>
         <span class="spacer"></span>
         <a href="blog_list.html">主页</a>
-        <a href="blog_edit.html">写博客</a>
-        <a href="logout">注销</a>
+        <a href="blog_add.html">写博客</a>
+        <a href="logout" onclick='logout()'>注销</a>
     </div>
     <div class="container">
         <div class="left">
             <div class="card">
                 <img src="image/image1.jpg" alt="">
-                <h3 ></h3>
+                <h3></h3>
                 <a href=''></a>
                 <div class="articlenumber">
                     <span>文章数:</span>
@@ -49,30 +49,33 @@
     <script>
         var userId = 0;
         jQuery.ajax({
-            url:'user/loginstate',
+            url: 'user/loginstate',
             type: 'GET',
-            success:function(result){
-                if(result != null && result.success == 200){
-                    if(result.data != null && result.data.userId > 0){
+            success: function (result) {
+                if (result != null && result.success == 200) {
+                    if (result.data != null && result.data.userId > 0) {
                         userId = result.data.userId;
                         changeUser(result.data);
                         createBlogList(userId);
+                    } else {
+                        alert("请先登录！")
+                        location.href = "login.html";
                     }
                 }
             }
         });
-        function createBlogList(userId){
+        function createBlogList(userId) {
             jQuery.ajax({
-                url:'blog/getmyblogs',
-                type:'GET',
-                data:{'userId': userId},
-                success:function(result){
-                    if(result != null && result.success == 200){
+                url: 'blog/getmyblogs',
+                type: 'GET',
+                data: { 'userId': userId },
+                success: function (result) {
+                    if (result != null && result.success == 200) {
                         var blogList = result.data;
-                        if(blogList != null && blogList.length > 0){
+                        if (blogList != null && blogList.length > 0) {
                             buildBlogs(blogList);
                         }
-                    }else{
+                    } else {
                         alert("未登录，请先登录！");
                         location.href('login.html');
                     }
@@ -98,10 +101,15 @@
             return newTime;
         }
 
-         function buildBlogs(blogs) {
+        function buildBlogs(blogs) {
 
             let rightDiv = document.querySelector('.container .right');
-
+            //文章数
+            let articles = document.createElement('span');
+            articles.className = 'articles';
+            articles.innerHTML = blogs.length;
+            let articleNumber = document.querySelector('.card>.articlenumber');
+            articleNumber.appendChild(articles);
             for (let blog of blogs) {
                 //构造博客
                 let blogDiv = document.createElement('div');
@@ -135,18 +143,11 @@
         function changeUser(user) {
             let h3 = document.querySelector('.card>h3');
             h3.innerHTML = user.username;
-            
+
             //gitlink
             let gita = document.querySelector('.card>a');
             gita.innerHTML = user.github;
             gita.href = user.github;
-
-            //文章数
-            let articles = document.createElement('span');
-            articles.className = 'articles';
-            articles.innerHTML = user.articleNumber;
-            let articleNumber = document.querySelector('.card>.articlenumber');
-            articleNumber.appendChild(articles);
 
             //添加用户管理
             let navDiv = document.querySelector('.nav');
@@ -154,6 +155,23 @@
             userEditButton.innerHTML = '用户管理';
             userEditButton.href = 'user_edit.html?userId=' + user.userId;
             navDiv.appendChild(userEditButton);
+        }
+        function logout() {
+            if (confirm("是否退出？")) {
+                jQuery.ajax({
+                    url: "user/logout",
+                    type: "POST",
+                    success: function (result) {
+                        if (result != null && result.success == 200 && result.data == 1) {
+                            alert("退出成功！");
+                            location.href = "index.html";
+                        } else {
+                            alert("抱歉：操作出错，请重试！");
+                        }
+                    }
+                });
+                l
+            }
         }
     </script>
 </body>

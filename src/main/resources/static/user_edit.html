@@ -56,32 +56,26 @@
 
     <div class="edit-container">
         <div class="edit-dialog">
-            <form action="useredit" method="post">
-                <h3>个人信息管理</h3>
-                <div class="row">
-                    <span>用户名</span>
-                    <input type="text" id="username" name="username">
-                </div>
-                <div class="row">
-                    <span>密码</span>
-                    <input type="password" id="password" name="password">
-                </div>
-                <div class="row">
-                    <span>确认密码</span>
-                    <input type="password" id="password" name="password">
-                </div>
-                <div class="row">
-                    <ul>
-                        <li>
-                            <label for="upload-file">上传文件</label>
-                            <input type="file" accept="image/*" id="upload-file">
-                        </li>
-                    </ul>
-                </div>
-                <div class="row submit-row">
-                    <input id="submit" type="submit" value='确定'>
-                </div>
-            </form>
+            <h3>个人信息管理</h3>
+            <div class="row">
+                <span>用户名</span>
+                <input type="text" id="username" name="username">
+            </div>
+            <div class="row">
+                <span>密码</span>
+                <input type="password" id="password" name="password">
+            </div>
+            <div class="row">
+                <span>确认密码</span>
+                <input type="password" id="password2" name="password2">
+            </div>
+            <div class="row">
+                <span>Git链接</span>
+                <input type="gitlink" id="gitlink" name="gitlink">
+            </div>
+            <div class="row submit-row">
+                <button id="submit" type="submit" value='确定' onclick="updateuser()">确定</button>
+            </div>
             <div class='row submit-row'>
                 <button id="submit" type="submit" value="重填" href='user_edit.html'>重填</button>
             </div>
@@ -89,7 +83,80 @@
     </div>
     <script src="js/jquery.min.js"> </script>
     <script>
-
+        jQuery.ajax({
+            url:"user/loginstate",
+            type:"GET",
+            success:function(result){
+                if(result != null && result.success == 200){
+                    if (result.data != null && result.data.userId > 0) {
+                        jQuery('#username').val(result.data.username);
+                        jQuery('#password').val(result.data.password);    
+                        jQuery('#password2').val(result.data.password);
+                        jQuery("#gitlink").val(result.data.github);
+                    } else {
+                        alert("请先登录！")
+                        location.href = "login.html";
+                    }
+                }
+            }
+        })
+        function updateuser() {
+            var username = jQuery("#username");
+            var password = jQuery("#password");
+            var password2 = jQuery("#password2");
+            var gitlink = jQuery("#gitlink");
+            if (jQuery.trim(username.val()) == "") {
+                alert("抱歉：请先输入登录名！");
+                username.focus();
+                return;
+            }
+            if (jQuery.trim(password.val()) == "") {
+                alert("抱歉：请先输入密码！");
+                password.focus();
+                return;
+            }
+            if (jQuery.trim(password2.val()) == "") {
+                alert("抱歉：请先输入确认密码！");
+                password2.focus();
+                return;
+            }
+            if (jQuery.trim(gitlink.val()) == "") {
+                alert("抱歉：请先输入git链接！");
+                password2.focus();
+                return;
+            }
+            if (password.val().length < 8) {
+                alert("抱歉：密码强度太低，密码位数必须大于等于8位！");
+                password.focus();
+                return;
+            }
+            if (password.val() != password2.val()) {
+                alert("抱歉：两次输入的密码不一致，请检查！");
+                password.focus();
+                return;
+            }
+            jQuery.ajax({
+                url: "user/update",
+                type: "POST",
+                data: {
+                    "username": username.val(),
+                    "password": password.val(),
+                    "gitlink": gitlink.val()
+                },
+                success: function (result) {
+                    if (result != null && result.success == 200) {
+                        if (result.data = 1) {
+                            alert("修改成功！");
+                            location.href = "login.html";
+                        } else {
+                            alert("抱歉：修改失败，" + data.message);
+                        }
+                    } else {
+                        alert("后台程序出错！");
+                    }
+                }
+            })
+        }
     </script>
 </body>
 

@@ -24,4 +24,7 @@ public interface UserMapper {
     Integer delete(@Param("userId") Integer id);
 
     user selectByName(@Param("username") String username);
+
+    user selectByBlogId(@Param("blogId") Integer blogId);
+    Integer update (user user);
 }

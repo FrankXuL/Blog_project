@@ -48,4 +48,8 @@ public class BlogService {
     public Blog selectByBlogId(@Param("blogId") Integer id) {
         return blogMapper.selectByBlogId(id);
     }
+
+    public Integer updateReadCount(Integer blogId){
+        return blogMapper.updateReadCount(blogId);
+    }
 }

@@ -18,6 +18,7 @@ import java.util.HashMap;
  * @Date: 6/11/2022 下午 9:08
  * @Version 1.0
  */
+@SuppressWarnings(("all"))
 @RestController
 @RequestMapping("/user")
 public class UserController {
@@ -119,8 +120,63 @@ public class UserController {
             data = user;
             message = "";
 
-        }else{
+        } else {
             message = "非法参数";
+        }
+        result.put("success", 200);
+        result.put("data", data);
+        result.put("message", message);
+        return result;
+    }
+
+    /**
+     * @description: 通过BlogId获取用户
+     * @param: blogId
+     * @return: java.util.HashMap<java.lang.String, java.lang.Object>
+     * @author Xu
+     * @date: 8/11/2022 下午 5:42
+     */
+    @RequestMapping("/getuserbyblogid")
+    public HashMap<String, Object> GetUserByBlogId(String blogId) {
+        HashMap<String, Object> result = new HashMap<>();
+        user data = null;
+        String message = "未知错误";
+        user user = userService.selectByBlogId(Integer.parseInt(blogId));
+        if (user != null) {
+            data = user;
+            message = "";
+        } else {
+            message = "非法参数";
+        }
+        result.put("success", 200);
+        result.put("data", data);
+        result.put("message", message);
+        return result;
+    }
+    /**
+     * @description:  修改用户信息
+     * @param: request,username,password,gitlink
+     * @return: java.util.HashMap<java.lang.String,java.lang.Object>
+     * @author Xu
+     * @date: 8/11/2022 下午 10:13
+     */
+    @RequestMapping("/update")
+    public HashMap<String, Object> UpdateUser(HttpServletRequest request, String username, String password, String gitlink) {
+        HashMap<String, Object> result = new HashMap<>();
+        user data = null;
+        String message = "未知错误";
+        user user = UserUtil.checkLoginStatus(request);
+        if (user != null) {
+            user.setUsername(username);
+            user.setPassword(password);
+            user.setGithub(gitlink);
+            int affect = userService.update(user);
+            if (affect == 1) {
+                data = user;
+                message = "";
+            } else {
+                message = "非法参数";
+            }
         }
         result.put("success", 200);
         result.put("data", data);

@@ -37,7 +37,8 @@
 
 .login-dialog #username,
 .login-dialog #password,
-.login-dialog #password2 {
+.login-dialog #password2,
+.login-dialog #gitlink {
     width: 200px;
     height: 40px;
     font-size: 20px;
@@ -116,7 +117,9 @@
 }
 
 .edit-dialog #username,
-.edit-dialog #password {
+.edit-dialog #password,
+.edit-dialog #password2,
+.edit-dialog #gitlink {
     width: 200px;
     height: 40px;
     font-size: 20px;

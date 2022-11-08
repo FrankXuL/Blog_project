@@ -8,7 +8,6 @@
     <title>博客详情</title>
     <link rel="stylesheet" href="css/common.css">
     <link rel="stylesheet" href="css/blog_detail.css">
-    <!-- 引入 editor.md 的依赖 -->
     <link rel="stylesheet" href="editor.md/css/editormd.min.css" />
 </head>
 
@@ -18,8 +17,8 @@
         <span class="title">个人博客系统</span>
         <span class="spacer"></span>
         <a href="blog_list.html">主页</a>
-        <a href="blog_edit.html">写博客</a>
-        <a href="logout">注销</a>
+        <a href="blog_add.html">写博客</a>
+        <a href="logout" onclick="logout()">注销</a>
     </div>
 
     <div class="container">
@@ -28,8 +27,8 @@
                 <img src="image/image1.jpg" alt="">
                 <h3></h3>
                 <a href="">github 地址</a>
-                <div class="articlenumber">
-                    <span>文章数:</span>
+                <div class="blogcontent">
+                    <span>文章阅读量: </span>
                 </div>
                 <div class="counter">
                     <span>文章</span>
@@ -56,24 +55,48 @@
     <script src="editor.md/lib/prettify.min.js"></script>
     <script src="editor.md/editormd.js"></script>
     <script>
-        $.ajax({
-            url: 'blog' + location.search,
-            method: 'GET',
-            success: function (data, status) {
-                console.log("enter success status" + status);
-                buildBlog(data);
-            },
-            error: function (data, status) {
-                console.log("enter error status " + status);
-                location.assign('login.html');
-            }
-        })
-        function buildBlog(blog) {
-            let titleDiv = document.querySelector('.blog-content>h3');
-            titleDiv.innerHTML = blog.title;
-            let dateDiv = document.querySelector('.blog-content>.date');
-            dateDiv.innerHTML = formatDate(blog.postTime);
-            editormd.markdownToHTML('content', { markdown: blog.content });
+
+        var blogId = getURLParam("blogId");
+        if (blogId == null || blogId == "" && blogId <= 0) {
+            alert("访问失败，非法参数");
+            location.href("index.html");
+        } else {
+            //加载文章
+            loadBlog();
+            //加载作者
+            loadUserInfo();
+            //文章数加一
+            addRCount()
+        }
+
+        function loadBlog() {
+            jQuery.ajax({
+                url: 'blog/getblog',
+                type: 'POST',
+                data: { "blogId": blogId },
+                success: function (result) {
+                    if (result != null && result.success == 200) {
+                        if (result.data != null && result.data.blogId >= 0) {
+                            var blog = result.data
+                            let titleDiv = document.querySelector('.blog-content>h3');
+                            titleDiv.innerHTML = blog.title;
+                            let dateDiv = document.querySelector('.blog-content>.date');
+                            dateDiv.innerHTML = formatDate(blog.postTime);
+                            editormd.markdownToHTML('content', { markdown: blog.content });
+                            //文章阅读量
+                            let blogcontent = document.createElement('span');
+                            //blogcontent.className = 'blogcontent';
+                            blogcontent.innerHTML = blog.readCount;
+                            let blogcontent1 = document.querySelector('.card1>.blogcontent');
+                            blogcontent1.appendChild(blogcontent);
+                        } else {
+                            alert("抱歉，当前文章不存在！");
+                        }
+                    } else {
+                        alert("抱歉，后端程序不可用");
+                    }
+                }
+            });
         }
 
         function formatDate(timeStampMS) {
@@ -93,17 +116,24 @@
                 (sec < 10 ? '0' + sec : sec);
             return newTime;
         }
-        $.ajax({
-            url: 'user'+ location.search,
-            method: 'GET',
-            success: function (data, status) {
-                console.log(status+data);
-                changeUser(data);
-            },
-            error: function (data, status) {
-                console.log(status);
-            }  
-        });
+        function loadUserInfo() {
+            jQuery.ajax({
+                url: 'user/getuserbyblogid',
+                type: 'GET',
+                data: { 'blogId': blogId },
+                success: function (result) {
+                    if (result != null && result.success == 200) {
+                        if (result.data != null && result.data.userId > 0) {
+                            changeUser(result.data);
+                        } else {
+                            alert("抱歉：后端程序异常，" + result.msg);
+                        }
+                    } else {
+                        alert("后端程序不可用!");
+                    }
+                }
+            });
+        }
 
         function changeUser(user) {
             let h3 = document.querySelector('.card1>h3');
@@ -112,12 +142,6 @@
             let gita = document.querySelector('.card1>a');
             gita.innerHTML = user.github;
             gita.href = user.github;
-            //文章数
-            let articles = document.createElement('span');
-            articles.className = 'articles';
-            articles.innerHTML = user.articleNumber;
-            let articleNumber = document.querySelector('.card1>.articlenumber');
-            articleNumber.appendChild(articles);
 
             //添加用户管理
             let navDiv = document.querySelector('.nav');
@@ -125,35 +149,100 @@
             userEditButton.innerHTML = '用户管理';
             userEditButton.href = 'user_edit.html?userId=' + user.userId;
             navDiv.appendChild(userEditButton);
-            if (user.isYourBlog) {
-                let navDiv = document.querySelector('.nav');
-                //添加博客删除
-                let delButton = document.createElement('a');
-                delButton.innerHTML = '删除';
-                delButton.href = '#';
-                delButton.onclick = deleteBlog;
-                navDiv.appendChild(delButton)
-                //添加博客编辑
-                let editButton = document.createElement('a');
-                editButton.innerHTML = '编辑';
-                editButton.href = 'blog_edit.html?blogId=' + geturlparam();
-                navDiv.appendChild(editButton);
-            }
+            jQuery.ajax({
+                url: 'blog/isyourblog',
+                type: 'GET',
+                data: {
+                    "userId": user.userId,
+                    "blogId": blogId
+                },
+                success: function (result) {
+                    if (result != null && result.success == 200) {
+                        if (result.data != null && result.data == 1) {
+                            let navDiv = document.querySelector('.nav');
+                            //添加博客删除
+                            let delButton = document.createElement('a');
+                            delButton.innerHTML = '删除';
+                            delButton.href = '#';
+                            delButton.onclick = deleteBlog;
+                            navDiv.appendChild(delButton)
+                            //添加博客编辑
+                            let editButton = document.createElement('a');
+                            editButton.innerHTML = '编辑';
+                            editButton.href = 'blog_edit.html?blogId=' + getURLParam();
+                            navDiv.appendChild(editButton);
+                        } 
+                    } else {
+                        alert("抱歉：后端程序不可用，请您稍后再试！");
+                    }
+                }
+            });
+          
         }
-        function geturlparam() {
+        function addRCount() {
+            jQuery.ajax({
+                url: "blog/updatereadcount",
+                type: "POST",
+                data: { "blogId": blogId },
+                success: function (result) {
+                    if (result != null && result.success == 200) {
+                        console.log(result.data);
+                    } else {
+                        alert("后端程序不可用！1");
+                    }
+                }
+            });
+        }
+        // function getURLParam(key) {
+        //     var params = location.search;
+        //     if (params.indexOf("?") >= 0) {
+        //         params = params.substring(1);
+        //         var paramArr = params.split('&');
+        //         for (var i = 0; i < paramArr.length; i++) {
+        //             var namevalues = paramArr[i].split("=");
+        //             if (namevalues[0] == key) {
+        //                 return namevalues[1];
+        //             }
+        //         }
+        //     } else {
+        //         return "";
+        //     }
+        // }
+        function getURLParam() {
             let url = location.search;
             let p = url.split('?')[1]
             let params = new URLSearchParams(p)
             return params.get('blogId'); //1
         }
 
+        function logout() {
+            if (confirm("是否退出？")) {
+                jQuery.ajax({
+                    url: "user/logout",
+                    type: "POST",
+                    success: function (result) {
+                        if (result != null && result.success == 200 && result.data == 1) {
+                            alert("退出成功！");
+                            location.href = "index.html";
+                        } else {
+                            alert("抱歉：操作出错，请重试！");
+                        }
+                    }
+                });
+                l
+            }
+        }
         function deleteBlog() {
             $.ajax({
-                url: 'blog' + location.search,
-                method: 'DELETE',
-                success: function (data, status) {
-                    console.log("enter success status" + status);
-                    location.assign('blog_list.html');
+                url: 'blog/deleteblog' + location.search,
+                method: 'GET',
+                success: function (result) {
+                    if (result != null && result.succ == 200 && result.data == 1) {
+                        alert("删除成功！");
+                        location.href = "blog_list.html";
+                    } else {
+                        alert("抱歉：操作出错，请重试！");
+                    }
                 }
             })
         }

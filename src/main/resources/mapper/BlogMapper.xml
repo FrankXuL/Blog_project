@@ -4,8 +4,11 @@
 <mapper namespace="com.example.blog_project.mapper.BlogMapper">
     <insert id="insert">
         insert into blog
-        values (Null, #{title}, #{content}, #{postTime}, #{userId})
+        values (Null, #{title}, #{content}, #{postTime}, #{userId},0)
     </insert>
+    <update id="updateReadCount">
+        update blog set readCount=readCount+1 where blogId=#{blogId}
+    </update>
     <select id="selectAll" resultType="com.example.blog_project.model.Blog">
         select *
         from blog;
@@ -33,7 +36,8 @@
     <update id="update">
         update blog
         set title   = #{title},
-            content = #{content}
+            content = #{content},
+            postTime = #{postTime}
         where blogId = #{blogId}
     </update>
 

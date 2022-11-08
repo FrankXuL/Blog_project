@@ -14,6 +14,4 @@ public class user {
     private String username;
     private String password;
     private String github;
-    private int isYourBlog;
-    private int articleNumber;
 }
